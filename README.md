@@ -28,10 +28,11 @@ La idea principal es, a partir de la descripción de escenario a alto nivel (fic
 </ul>
 
 ## Antes de comenzar :hourglass_flowing_sand:
-<ul>
-  <li>Crear una cuenta en Google Cloud Platform</li>
-  <li>Crear un proyecto</li>
-</ul>
+<ol>
+  <li>Clonar el repositorio en el directorio de trabajo con el siguiente comando: `git clone https://github.com/samugs13/DAERV`
+  <li>Disponer de una cuenta en Google Cloud Platform</li>
+  <li>Crear un proyecto de Google Cloud en nuestra cuenta</li>
+</ol>
 
 Una vez tengamos creada una cuenta y un proyecto, debemos [habilitar la API de Google Compute Engine para nuestro proyecto en la consola de GCP](https://console.developers.google.com/apis/library/compute.googleapis.com).
 

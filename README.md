@@ -17,24 +17,18 @@
 Este repositorio contiene el código desarrollado para mi Trabajo de Fin de Grado "Desarrollo de una herramienta para el despliegue automatizado de escenarios de red virtualizados aplicables a plataformas CyberRange".
 
 ## Descripción :page_facing_up:
-Previo al desarrollo, se realizó un análisis del estado del arte referente a herramientas para el despliegue de IaaS (Infrastructure as a Service) con el objetivo de realizar despliegues de de red heterogéneos virtualizados, aplicables a plataformas CyberRange para la formación y entrenamiento en el campo de la ciberseguridad. Tras la fase de análisis, se decidió que dicho despliegue estuviera centrado en la tecnología Terraform, con providers basados en Cloud (en concreto Google Cloud Platform) y la tecnología de virtualización ligera Docker.
-
-La idea principal es, a partir de la descripción de escenario a alto nivel (ficheros JSON, YAML, XML...), parametrizar y adaptar dichos ficheros a la tecnología de despliegue Terraform, evitando la dependencia asociada a los entornos físicos donde se desplegarán los escenarios de red virtualizados. El despliegue hace referencia tanto a la topología de red, interconexiones, como al aprovisionamiento de las máquinas finales. De esta forma, se manejará un catálogo de escenarios a virtualizar de forma automática, los cuales serán utilizados para la realización de ciberejercicios.
+El objetivo de este trabajo es realizar despliegues de red heterogéneos virtualizados, aplicables a plataformas CyberRange para la formación y entrenamiento en el campo de la ciberseguridad. ESte despliegue se ha llevado a cabo empleando la tecnología Terraform, con providers basados en Cloud (en concreto Google Cloud Platform) y la tecnología de virtualización ligera Docker para el aprovisionamiento de la infraestructura desplegada en la nube..
 
 ## Dependencias :bookmark:
-<ul>
-   <li> Terraform (https://www.terraform.io/downloads) </li>
-   <li> gcloud CLI (https://cloud.google.com/sdk/docs/install) </li>
-</ul>
+  - [Terraform](https://www.terraform.io/downloads)
+  - [gcloud CLI](https://cloud.google.com/sdk/docs/install)
 
 ## Antes de comenzar :hourglass_flowing_sand:
-<ol>
-  <li>Clonar el repositorio en el directorio de trabajo con el siguiente comando: `git clone https://github.com/samugs13/DAERV`
-  <li>Disponer de una cuenta en Google Cloud Platform</li>
-  <li>Crear un proyecto de Google Cloud en nuestra cuenta</li>
-</ol>
+  - Clonar el repositorio en el directorio de trabajo con el siguiente comando: `git clone https://github.com/samugs13/DAERV`
+  - Disponer de una cuenta en Google Cloud Platform
+  - Crear un proyecto de Google Cloud
 
-Una vez tengamos creada una cuenta y un proyecto, debemos [habilitar la API de Google Compute Engine para nuestro proyecto en la consola de GCP](https://console.developers.google.com/apis/library/compute.googleapis.com).
+Una vez tengamos creada una cuenta y un proyecto en ella, debemos [habilitar la API de Google Compute Engine para nuestro proyecto en la consola de GCP](https://console.developers.google.com/apis/library/compute.googleapis.com).
 
 ## Preparación del entorno :wrench:
 En primer lugar, hay que autenticarse con GCP. Para ello, basta con ejecutar `gcloud auth application-default login` en la terminal. Esto nos dirigirá a una página donde podremos iniciar sesión con nuestra cuenta de Google para permitir el acceso a nuestros datos de GCP.

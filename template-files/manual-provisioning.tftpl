@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# Which OS are we running on?
+OS=$(cat /etc/os-release | grep "^ID=" | cut -d "=" -f 2 | xargs)
+
+# Docker installation depending on the OS
+case $OS in
+
+    "debian" | "ubuntu")
+		sudo apt-get update -y
+		sudo apt-get install ca-certificates curl gnupg lsb-release -y
+	
+		if [[ $OS == "debian" ]]
+		then
+			curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+			echo \
+			"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
+			$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+		elif [[ $OS == "ubuntu" ]]
+		then
+			curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+			echo \
+			"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+			$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+		fi
+
+		sudo apt-get update -y
+		sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+    ;;
+
+    "centos" | "rhel")
+		sudo yum install -y yum-utils
+
+		if [[ $OS == "centos" ]]
+		then
+			sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+	
+		elif [[ $OS == "rhel" ]]
+		then
+			sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+		fi
+
+		sudo yum install -y docker-ce docker-ce-cli containerd.io
+    ;;
+
+    "fedora")
+		sudo dnf -y install dnf-plugins-core
+		sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+		sudo dnf install -y docker-ce docker-ce-cli containerd.io
+    ;;
+esac
+
+# Start Docker daemon and run Docker container
+sudo systemctl start docker
+sudo docker run -p ${ports} ${image}:${tag}

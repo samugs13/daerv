@@ -53,4 +53,4 @@ esac
 
 # Start Docker daemon and run Docker container
 sudo systemctl start docker
-sudo docker run -p ${ports} ${image}:${tag}
+sudo docker run ${args} ${image}:${tag}

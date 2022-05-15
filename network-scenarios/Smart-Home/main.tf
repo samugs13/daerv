@@ -105,7 +105,7 @@ resource "google_compute_router_nat" "nat" {
 }
 
 resource "google_compute_subnetwork" "home_lan" {
-  name          = "intranet"
+  name          = "home-lan"
   ip_cidr_range = var.private_subnet_cidr_blocks[1]
   region        = var.region
   network       = google_compute_network.smart_home.self_link

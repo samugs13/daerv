@@ -255,7 +255,7 @@ resource "google_compute_instance" "employee_remote_pc" {
 }
 
 resource "google_compute_instance" "attacker" {
-  name         = "attaker"
+  name         = "attacker"
   machine_type = var.machine_type
   project      = var.project_id
   zone         = var.zone

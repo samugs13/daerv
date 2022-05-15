@@ -19,11 +19,13 @@ Este repositorio contiene el código desarrollado para mi Trabajo de Fin de Grad
 ## Descripción :page_facing_up:
 El objetivo de este trabajo es realizar despliegues de red heterogéneos virtualizados, aplicables a plataformas CyberRange para la formación y entrenamiento en el campo de la ciberseguridad. Este despliegue se ha llevado a cabo empleando la tecnología Terraform, con providers basados en Cloud (en concreto Google Cloud Platform) y la tecnología de virtualización ligera Docker para el aprovisionamiento de la infraestructura desplegada en la nube.
 
+## Estructura del proyecto :open_file_folder:
+
 ## Dependencias :bookmark:
   - [Terraform](https://www.terraform.io/downloads)
   - [gcloud CLI](https://cloud.google.com/sdk/docs/install)
 
-## Antes de comenzar :hourglass_flowing_sand:
+## Pre-requisitios :hourglass_flowing_sand:
   - Clonar el repositorio en el directorio de trabajo con el siguiente comando: `git clone https://github.com/samugs13/DAERV`
   - Disponer de una cuenta en Google Cloud Platform
   - Crear un proyecto de Google Cloud
@@ -46,6 +48,10 @@ export GOOGLE_APPLICATION_CREDENTIALS={{path}}
 > Para que las credenciales se guarden entre sesiones, es necesario añadir esta línea a un fichero de inicio como bash_profile o bashrc. Si esto no es de tu gusto, una opción alternativa a la variable de entorno sería proporcionar a Terraform el path a la clave en la configuración del provider, dentro del fichero `main.tf`.
 
 ## Arranque del entorno :rocket:
+## Escenarios de red :computer:
+## Autor :art:
+[Samuel García Sánchez](https://github.com/samugs13)
+
 
 
 

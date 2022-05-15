@@ -133,7 +133,7 @@ resource "google_compute_subnetwork" "server_lan" {
 }
 
 resource "google_compute_subnetwork" "smart_speaker_lan" {
-  name          = "server-lan"
+  name          = "smart-speaker-lan"
   ip_cidr_range = var.private_subnet_cidr_blocks[5]
   region        = var.region
   network       = google_compute_network.smart_office_2.self_link

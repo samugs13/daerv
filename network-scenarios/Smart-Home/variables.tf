@@ -45,8 +45,8 @@ variable "windows_container_image" {
   default = "windows-cloud/windows-2019-for-containers"
 }
 
-variable "windows_server_image" {
-  default = "microsoft/windowsservercore"
+variable "windows_image" {
+  default = "windows-cloud/windows-2022-core"
 }
 
 variable "ubuntu_image" {

@@ -104,23 +104,30 @@ resource "google_compute_router_nat" "nat" {
   }
 }
 
-resource "google_compute_subnetwork" "office_lan" {
-  name          = "office-lan"
+resource "google_compute_subnetwork" "office_internal_lan" {
+  name          = "office-internal-lan"
   ip_cidr_range = var.private_subnet_cidr_blocks[1]
   region        = var.region
   network       = google_compute_network.smart_office_1.self_link
 }
 
-resource "google_compute_subnetwork" "remote_lan" {
-  name          = "remote-lan"
+resource "google_compute_subnetwork" "dmz" {
+  name          = "dmz"
   ip_cidr_range = var.private_subnet_cidr_blocks[2]
+  region        = var.region
+  network       = google_compute_network.smart_office_1.self_link
+}
+
+resource "google_compute_subnetwork" "office_external_lan" {
+  name          = "office-external-lan"
+  ip_cidr_range = var.private_subnet_cidr_blocks[3]
   region        = var.region
   network       = google_compute_network.smart_office_1.self_link
 }
 
 resource "google_compute_subnetwork" "server_lan" {
   name          = "server-lan"
-  ip_cidr_range = var.private_subnet_cidr_blocks[3]
+  ip_cidr_range = var.private_subnet_cidr_blocks[4]
   region        = var.region
   network       = google_compute_network.smart_office_1.self_link
 }
@@ -139,7 +146,7 @@ resource "google_compute_instance" "employee_pc_1" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.office_lan.self_link
+    subnetwork = google_compute_subnetwork.office_internal_lan.self_link
   }
 }
 
@@ -157,7 +164,7 @@ resource "google_compute_instance" "employee_pc_2" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.office_lan.self_link
+    subnetwork = google_compute_subnetwork.office_internal_lan.self_link
   }
 }
 
@@ -175,7 +182,7 @@ resource "google_compute_instance" "employee_pc_3" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.office_lan.self_link
+    subnetwork = google_compute_subnetwork.office_internal_lan.self_link
   }
 }
 
@@ -193,10 +200,10 @@ resource "google_compute_instance" "office_printer" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.office_lan.self_link
+    subnetwork = google_compute_subnetwork.office_internal_lan.self_link
   }
 
-  metadata_startup_script = templatefile(var.manual_provisioning_path, { ports = "80:80", image = "nginx", tag = "latest" })
+  metadata_startup_script = templatefile(var.manual_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
 }
 
 resource "google_compute_instance" "ips" {
@@ -213,10 +220,10 @@ resource "google_compute_instance" "ips" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.office_lan.self_link
+    subnetwork = google_compute_subnetwork.dmz.self_link
   }
 
-  metadata_startup_script = templatefile(var.manual_provisioning_path, { ports = "80:80", image = "nginx", tag = "latest" })
+  metadata_startup_script = templatefile(var.manual_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
 }
 
 resource "google_compute_instance" "cloud_printer_server" {
@@ -228,7 +235,7 @@ resource "google_compute_instance" "cloud_printer_server" {
 
   boot_disk {
     initialize_params {
-      image = var.container_image
+      image = var.ubuntu_image
     }
   }
 
@@ -237,7 +244,7 @@ resource "google_compute_instance" "cloud_printer_server" {
     access_config {}
   }
 
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { ports = "80:80", image = "nginx", tag = "latest" })
+  metadata_startup_script = templatefile(var.manual_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
 }
 
 resource "google_compute_instance" "employee_remote_pc" {
@@ -254,7 +261,7 @@ resource "google_compute_instance" "employee_remote_pc" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.remote_lan.self_link
+    subnetwork = google_compute_subnetwork.office_external_lan.self_link
   }
 }
 
@@ -272,6 +279,6 @@ resource "google_compute_instance" "attacker" {
   }
 
   network_interface {
-    subnetwork = google_compute_subnetwork.remote_lan.self_link
+    subnetwork = google_compute_subnetwork.office_external_lan.self_link
   }
 }

@@ -16,10 +16,8 @@
 
 Este repositorio contiene el código desarrollado para mi Trabajo de Fin de Grado "Desarrollo de una herramienta para el despliegue automatizado de escenarios de red virtualizados aplicables a plataformas CyberRange".
 
-## Descripción :page_facing_up:
+## Descripción :clipboard:
 El objetivo de este trabajo es realizar despliegues de red heterogéneos virtualizados, aplicables a plataformas CyberRange para la formación y entrenamiento en el campo de la ciberseguridad. Este despliegue se ha llevado a cabo empleando la tecnología Terraform, con providers basados en Cloud (en concreto Google Cloud Platform) y la tecnología de virtualización ligera Docker para el aprovisionamiento de la infraestructura desplegada en la nube.
-
-## Estructura del proyecto :open_file_folder:
 
 ## Dependencias :bookmark:
   - [Terraform](https://www.terraform.io/downloads)
@@ -48,6 +46,8 @@ export GOOGLE_APPLICATION_CREDENTIALS={{path}}
 > Para que las credenciales se guarden entre sesiones, es necesario añadir esta línea a un fichero de inicio como bash_profile o bashrc. Si esto no es de tu gusto, una opción alternativa a la variable de entorno sería proporcionar a Terraform el path a la clave en la configuración del provider, dentro del fichero `main.tf`.
 
 ## Arranque del entorno :rocket:
+### Estructura del proyecto :open_file_folder:
+### Despliegue de escenarios :gear:
 ## Escenarios de red :computer:
 ## Autor :art:
 [Samuel García Sánchez](https://github.com/samugs13)

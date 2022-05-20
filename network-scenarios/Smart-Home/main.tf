@@ -83,12 +83,6 @@ resource "google_compute_router" "router" {
     asn               = 64514
     advertise_mode    = "CUSTOM"
     advertised_groups = ["ALL_SUBNETS"]
-    advertised_ip_ranges {
-      range = "1.2.3.4"
-    }
-    advertised_ip_ranges {
-      range = "6.7.0.0/16"
-    }
   }
 }
 
@@ -117,7 +111,7 @@ resource "google_compute_instance" "wireless_ap" {
   machine_type = var.machine_type
   project      = var.project_id
   zone         = var.zone
-  tags         = ["ssh"]
+  tags         = ["ssh", "webserver"]
 
   boot_disk {
     initialize_params {
@@ -127,9 +121,13 @@ resource "google_compute_instance" "wireless_ap" {
 
   network_interface {
     subnetwork = google_compute_subnetwork.home_lan.self_link
+    access_config {
+      #name = "external-access"
+      #nat_ip = var.external_ip
+    }
   }
 
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { ports = "80:80", image = "nginx", tag = "latest" })
+  metadata_startup_script = templatefile(var.docker_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
 }
 
 resource "google_compute_instance" "ip_camera" {
@@ -149,7 +147,7 @@ resource "google_compute_instance" "ip_camera" {
     subnetwork = google_compute_subnetwork.home_lan.self_link
   }
 
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { ports = "80:80", image = "nginx", tag = "latest" })
+  metadata_startup_script = templatefile(var.docker_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
 }
 
 resource "google_compute_instance" "smartphone" {
@@ -169,7 +167,7 @@ resource "google_compute_instance" "smartphone" {
     subnetwork = google_compute_subnetwork.home_lan.self_link
   }
 
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { ports = "80:80", image = "nginx", tag = "latest" })
+  metadata_startup_script = templatefile(var.docker_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
 }
 
 resource "google_compute_instance" "tablet" {
@@ -189,7 +187,7 @@ resource "google_compute_instance" "tablet" {
     subnetwork = google_compute_subnetwork.home_lan.self_link
   }
 
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { ports = "80:80", image = "nginx", tag = "latest" })
+  metadata_startup_script = templatefile(var.docker_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
 }
 
 resource "google_compute_instance" "smart_bulb" {
@@ -209,5 +207,5 @@ resource "google_compute_instance" "smart_bulb" {
     subnetwork = google_compute_subnetwork.home_lan.self_link
   }
 
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { ports = "80:80", image = "nginx", tag = "latest" })
+  metadata_startup_script = templatefile(var.docker_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
 }

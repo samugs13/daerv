@@ -19,6 +19,8 @@ Este repositorio contiene el código desarrollado para mi Trabajo de Fin de Grad
 ## Descripción :clipboard:
 El objetivo de este trabajo es realizar despliegues de red heterogéneos virtualizados, aplicables a plataformas CyberRange para la formación y entrenamiento en el campo de la ciberseguridad. Este despliegue se ha llevado a cabo empleando la tecnología Terraform, con providers basados en Cloud (en concreto Google Cloud Platform) y la tecnología de virtualización ligera Docker para el aprovisionamiento de la infraestructura desplegada en la nube.
 
+Las instancias desplegadas han sido aprovisionadas con imágenes Docker vulnerables. Es decir, con versiones de software que contienen vulnerabilidades conocidas, de forma que se pueden explotar para ganar acceso a los sistemas.
+
 ## Dependencias :bookmark:
   - [Terraform](https://www.terraform.io/downloads)
   - [gcloud CLI](https://cloud.google.com/sdk/docs/install)
@@ -47,6 +49,8 @@ export GOOGLE_APPLICATION_CREDENTIALS={{path}}
 
 ## Arranque del entorno :rocket:
 ### Estructura del proyecto :open_file_folder:
+- Directorio **network-scenarios**: contiene el código HCL necesario para el despliegue de la infraestructura en la nube. El fichero `main.tf` contiene configuraciones generales, como son la configuración del provider de google, los peerings entre las VPC que componen los escenarios, y las reglas de firewall de dichas VPC. Adicionalmente, a fin de simplificar la lectura del código, hay un fichero `.tf` por cada una de las VPC, que contiene el código correspondiente a los elementos de red que la componen. Finalmente, los ficheros `variables.tf` y `terraform.tfvars` contienen las variables que se emplean en el resto del código.
+- Directorio **template-files**: contiene los scripts necesarios para aprovisionar las máquinas con contenedores Docker. Si la imagen de la instancia desplegada en GCP es Container-Optimized OS, basta con usar el fichero `docker-provisioning.tftpl`, pues esta imagen cuenta con Docker ya instalado y sólo sería necesario arrancar el contenedor con los parámetros (argumentos, imagen y tag) que se deseen. En caso de que la imagen de la instancia sea Debian, Ubuntu, Centos, Fedora o derivados, será necesario el uso del script `manual-provisioning.tftpl`, que instala Docker en la máquina en función del SO elegido y posteriormente arranca el contenedor con los parámetros especificados.
 ### Despliegue de escenarios :gear:
 ## Escenarios de red :computer:
 ## Autor :art:

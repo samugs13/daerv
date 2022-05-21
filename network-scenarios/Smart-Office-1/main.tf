@@ -28,18 +28,6 @@ resource "google_compute_network_peering" "peering_4" {
   peer_network = google_compute_network.office_internal_network.self_link
 }
 
-resource "google_compute_network_peering" "peering_5" {
-  name         = "peering-5"
-  network      = google_compute_network.office_external_network.self_link
-  peer_network = google_compute_network.server_network.self_link
-}
-
-resource "google_compute_network_peering" "peering_6" {
-  name         = "peering-6"
-  network      = google_compute_network.server_network.self_link
-  peer_network = google_compute_network.office_external_network.self_link
-}
-
 resource "google_compute_firewall" "allow_ssh_internal" {
   name     = "allow-ssh-internal"
   network  = google_compute_network.office_internal_network.self_link

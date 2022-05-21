@@ -19,7 +19,7 @@ Este repositorio contiene el código desarrollado para mi Trabajo de Fin de Grad
 ## Descripción :clipboard:
 El objetivo de este trabajo es realizar despliegues de red heterogéneos virtualizados, aplicables a plataformas CyberRange para la formación y entrenamiento en el campo de la ciberseguridad. Este despliegue se ha llevado a cabo empleando la tecnología Terraform, con providers basados en Cloud (en concreto Google Cloud Platform) y la tecnología de virtualización ligera Docker para el aprovisionamiento de la infraestructura desplegada en la nube.
 
-El trabajo se centra principalmente en el despliegue de la infraestructura, y no en la configuración a fondo de todos los elementos para tests de intrusión específicos. Pese a esto, los scripts de aprovisionamiento que se proporcionan permiten aprovisionar las máquinas con imágenes Docker vulnerables, como las disponibles en [Vulhub](https://github.com/vulhub/vulhub), de forma que se puede personalizar la vulnerabilidad a explotar.
+El trabajo se centra principalmente en el despliegue de la infraestructura, y no en la configuración a fondo de todos los elementos para tests de intrusión específicos. No obstante, los ficheros que se proporcionan en el directorio `template-files` permiten aprovisionar las máquinas con imágenes Docker vulnerables, como las disponibles en [Vulhub](https://github.com/vulhub/vulhub). De esta forma, es posible crear imágenes con vulnerabilidades conocidas de forma personalizada mediante un Dockerfile, alojarlas en DockerHub, y luego pasarselas como argumento a la instancia de Google Cloud a la hora de construirla, teniendo así un entorno funcional en el que practicar ejercicios de Red Team. 
 
 ## Dependencias :bookmark:
   - [Terraform](https://www.terraform.io/downloads)

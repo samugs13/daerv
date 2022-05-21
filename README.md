@@ -26,7 +26,6 @@ El trabajo se centra principalmente en el despliegue de la infraestructura, y no
   - [gcloud CLI](https://cloud.google.com/sdk/docs/install)
 
 ## Pre-requisitios :hourglass_flowing_sand:
-  - Clonar el repositorio en el directorio de trabajo con el siguiente comando: `git clone https://github.com/samugs13/DAERV`
   - Disponer de una cuenta en Google Cloud Platform
   - Crear un proyecto de Google Cloud
 
@@ -48,10 +47,16 @@ export GOOGLE_APPLICATION_CREDENTIALS={{path}}
 > Para que las credenciales se guarden entre sesiones, es necesario añadir esta línea a un fichero de inicio como bash_profile o bashrc. Si esto no es de tu gusto, una opción alternativa a la variable de entorno sería proporcionar a Terraform el path a la clave en la configuración del provider, dentro del fichero `main.tf`.
 
 ## Arranque del entorno :rocket:
+
 ### Estructura del proyecto :open_file_folder:
 - Directorio **network-scenarios**: contiene el código HCL necesario para el despliegue de la infraestructura en la nube. El fichero `main.tf` contiene configuraciones generales, como son la configuración del provider de google, elementos generales de la VPC, o las reglas de firewall que controlan el tráfico entre las LAN. Adicionalmente, a fin de simplificar la lectura del código, hay un fichero `.tf` por cada una de las LAN, que contiene el código correspondiente a los elementos de red que la componen. Finalmente, los ficheros `variables.tf` y `terraform.tfvars` contienen las variables que se emplean en el resto del código.
 - Directorio **template-files**: contiene los scripts necesarios para aprovisionar las máquinas con contenedores Docker. Si la imagen de la instancia desplegada en GCP es Container-Optimized OS, basta con usar el fichero `docker-provisioning.tftpl`, pues esta imagen cuenta con Docker ya instalado y sólo sería necesario arrancar el contenedor con los parámetros (argumentos, imagen y tag) que se deseen. En caso de que la imagen de la instancia sea Debian, Ubuntu, Centos, Fedora o derivados, será necesario el uso del script `manual-provisioning.tftpl`, que instala Docker en la máquina en función del SO elegido y posteriormente arranca el contenedor con los parámetros especificados.
+
 ### Despliegue de escenarios :gear:
+1. Clonar el repositorio con el siguiente comando: `git clone https://github.com/samugs13/DAERV`
+2. Acceder al directorio de trabajo del escenario que se desea desplegar: `cd DAERV/network-scenarios/*escenario-a-desplegar*`
+3. Ejecutar los comandos `terraform init` y `terraform apply` para desplegar el escenario 
+
 ## Escenarios de red :computer:
 ## Autor :art:
 [Samuel García Sánchez](https://github.com/samugs13)

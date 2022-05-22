@@ -19,7 +19,7 @@ Este repositorio contiene el código desarrollado para mi Trabajo de Fin de Grad
 ## Descripción :clipboard:
 El objetivo de este trabajo es realizar despliegues de red heterogéneos virtualizados, aplicables a plataformas CyberRange para la formación y entrenamiento en el campo de la ciberseguridad. Este despliegue se ha llevado a cabo empleando la tecnología Terraform, con providers basados en Cloud (en concreto Google Cloud Platform) y la tecnología de virtualización ligera Docker para el aprovisionamiento de la infraestructura desplegada en la nube.
 
-El trabajo se centra principalmente en el despliegue de la infraestructura, y no en la configuración a fondo de todos los elementos para la realización de tests de intrusión específicos. No obstante, los ficheros que se proporcionan en el directorio `template-files` permiten aprovisionar las máquinas con imágenes Docker vulnerables, como las disponibles en [Vulhub](https://github.com/vulhub/vulhub). De esta forma, es posible crear imágenes con vulnerabilidades conocidas de forma personalizada mediante un Dockerfile, alojarlas en DockerHub, y luego pasarselas como argumento a la instancia de Google Cloud a la hora de construirla, teniendo así un entorno funcional en el que practicar ejercicios de Red Team. 
+El trabajo se centra principalmente en el despliegue de la infraestructura, y no en la configuración a fondo de todos los elementos para la realización de tests de intrusión específicos. No obstante, los ficheros que se proporcionan en el directorio `template-files` permiten aprovisionar las máquinas con imágenes Docker vulnerables, como las disponibles en [Vulhub](https://github.com/vulhub/vulhub). De esta forma, es posible crear imágenes con vulnerabilidades conocidas de forma personalizada mediante un Dockerfile, alojarlas en DockerHub, y luego pasárselas como argumento a la instancia de Google Cloud a la hora de construirla, teniendo así un entorno funcional en el que practicar ejercicios de Red Team. 
 
 ## Dependencias :bookmark:
   - [Terraform](https://www.terraform.io/downloads)
@@ -49,7 +49,7 @@ export GOOGLE_APPLICATION_CREDENTIALS={{path}}
 ## Arranque del entorno :rocket:
 
 ### Estructura del proyecto :open_file_folder:
-- Directorio **network-scenarios**: contiene el código HCL necesario para el despliegue de la infraestructura en la nube. El fichero `main.tf` contiene configuraciones generales, como son la configuración del provider de google, elementos generales de la VPC, o las reglas de firewall que controlan el tráfico entre las LAN. Adicionalmente, a fin de simplificar la lectura del código, hay un fichero `.tf` por cada una de las LAN, que contiene el código correspondiente a los elementos de red que la componen. Finalmente, los ficheros `variables.tf` y `terraform.tfvars` contienen las variables que se emplean en el resto del código.
+- Directorio **network-scenarios**: contiene el código HCL necesario para el despliegue de la infraestructura en la nube. El fichero `main.tf` contiene configuraciones generales, como son la configuración del provider de google, elementos generales de la VPC, o las reglas de firewall que controlan el tráfico entre las LAN. Adicionalmente, a fin de simplificar la lectura del código, hay un fichero `.tf` por cada una de las LAN, que contiene el código correspondiente a los elementos de red que la componen. Finalmente, en los ficheros `variables.tf` y `terraform.tfvars` se encuentran definidas las variables que se emplean en el resto del código.
 - Directorio **template-files**: contiene los scripts necesarios para aprovisionar las máquinas con contenedores Docker. Si la imagen de la instancia desplegada en GCP es Container-Optimized OS, basta con usar el fichero `docker-provisioning.tftpl`, pues esta imagen cuenta con Docker ya instalado y sólo sería necesario arrancar el contenedor con los parámetros (argumentos, imagen y tag) que se deseen. En caso de que la imagen de la instancia sea Debian, Ubuntu, Centos, Fedora o derivados, será necesario el uso del script `manual-provisioning.tftpl`, que instala Docker en la máquina en función del SO elegido y posteriormente arranca el contenedor con los parámetros especificados.
 
 ### Despliegue de escenarios :gear:
@@ -58,6 +58,7 @@ export GOOGLE_APPLICATION_CREDENTIALS={{path}}
 3. Ejecutar los comandos `terraform init` y `terraform apply` para desplegar el escenario 
 
 ## Escenarios de red :computer:
+
 ## Autor :art:
 [Samuel García Sánchez](https://github.com/samugs13)
 

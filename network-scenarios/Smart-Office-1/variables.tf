@@ -4,13 +4,11 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "Project region"
   type        = string
   default     = "europe-west1"
 }
 
 variable "zone" {
-  description = "Project zone"
   type        = string
   default     = "europe-west1-b"
 }

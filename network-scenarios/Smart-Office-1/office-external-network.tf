@@ -11,7 +11,7 @@ resource "google_compute_router" "office_external_router" {
   project = var.project_id
 
   bgp {
-    asn               = 64514
+    asn               = 64512
     advertise_mode    = "CUSTOM"
     advertised_groups = ["ALL_SUBNETS"]
   }
@@ -41,10 +41,11 @@ resource "google_compute_instance" "employee_remote_pc" {
   machine_type = var.machine_type
   project      = var.project_id
   zone         = var.zone
+  tags         = ["ssh", "external"]
 
   boot_disk {
     initialize_params {
-      image = var.windows_image
+      image = var.ubuntu_image
     }
   }
 
@@ -69,4 +70,6 @@ resource "google_compute_instance" "attacker" {
   network_interface {
     subnetwork = google_compute_subnetwork.office_external_lan.self_link
   }
+
+  metadata_startup_script = templatefile(var.manual_provisioning_path, { args = "--name kali -itd", image = "kalilinux/kali-rolling", tag = "latest" })
 }

@@ -48,11 +48,11 @@ resource "google_compute_instance" "employee_pc_1" {
   machine_type = var.machine_type
   project      = var.project_id
   zone         = var.zone
-  tags         = ["internal"]
+  tags         = ["employee"]
 
   boot_disk {
     initialize_params {
-      image = var.windows_image
+      image = var.ubuntu_image
     }
   }
 
@@ -66,7 +66,7 @@ resource "google_compute_instance" "employee_pc_2" {
   machine_type = var.machine_type
   project      = var.project_id
   zone         = var.zone
-  tags         = ["internal"]
+  tags         = ["employee"]
 
   boot_disk {
     initialize_params {
@@ -84,7 +84,7 @@ resource "google_compute_instance" "employee_pc_3" {
   machine_type = var.machine_type
   project      = var.project_id
   zone         = var.zone
-  tags         = ["ssh", "internal"]
+  tags         = ["ssh", "employee"]
 
   boot_disk {
     initialize_params {
@@ -102,7 +102,7 @@ resource "google_compute_instance" "office_printer" {
   machine_type = var.machine_type
   project      = var.project_id
   zone         = var.zone
-  tags         = ["ssh", "printer", "internal"]
+  tags         = ["ssh", "printer", "employee"]
 
   boot_disk {
     initialize_params {

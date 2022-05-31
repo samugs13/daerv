@@ -41,7 +41,7 @@ resource "google_compute_instance" "employee_remote_pc" {
   machine_type = var.machine_type
   project      = var.project_id
   zone         = var.zone
-  tags         = ["ssh", "external"]
+  tags         = ["ssh", "employee"]
 
   boot_disk {
     initialize_params {
@@ -70,6 +70,4 @@ resource "google_compute_instance" "attacker" {
   network_interface {
     subnetwork = google_compute_subnetwork.office_external_lan.self_link
   }
-
-  metadata_startup_script = templatefile(var.manual_provisioning_path, { args = "--name kali -itd", image = "kalilinux/kali-rolling", tag = "latest" })
 }

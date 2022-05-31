@@ -148,7 +148,7 @@ resource "google_compute_firewall" "allow_external_from_internal" {
   }
 
   source_ranges = [google_compute_subnetwork.printer_lan.ip_cidr_range, google_compute_subnetwork.employees_lan.ip_cidr_range]
-  target_tags   = ["external"]
+  target_tags   = ["employee"]
 }
 
 resource "google_compute_firewall" "allow_internal_from_external" {
@@ -173,7 +173,7 @@ resource "google_compute_firewall" "allow_internal_from_external" {
   }
 
   source_ranges = [google_compute_instance.employee_remote_pc.network_interface[0].network_ip]
-  target_tags   = ["internal"]
+  target_tags   = ["employee", "printer"]
 }
 
 resource "google_compute_firewall" "allow_printer_from_server" {

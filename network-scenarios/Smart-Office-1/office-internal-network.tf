@@ -70,7 +70,7 @@ resource "google_compute_instance" "employee_pc_2" {
 
   boot_disk {
     initialize_params {
-      image = var.windows_image
+      image = var.ubuntu_image
     }
   }
 

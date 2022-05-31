@@ -4,33 +4,36 @@ provider "google" {
   zone    = var.zone
 }
 
-resource "google_compute_network" "smart_office_2" {
-  project                 = var.project_id
-  name                    = "smart-office-2"
-  mtu                     = 1460
-  auto_create_subnetworks = false
+resource "google_compute_network_peering" "peer_external_to_internal" {
+  name         = "peer-external-to-internal"
+  network      = google_compute_network.office_external_network.self_link
+  peer_network = google_compute_network.office_internal_network.self_link
 }
 
-resource "google_compute_firewall" "web_fw" {
-  name     = "web-fw"
-  network  = google_compute_network.smart_office_2.self_link
-  project  = var.project_id
-  priority = 900
-
-  allow {
-    protocol = "tcp"
-    ports    = [80, 443]
-  }
-
-  source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["webserver"]
+resource "google_compute_network_peering" "peer_internal_to_external" {
+  name         = "peer-internal-to-external"
+  network      = google_compute_network.office_internal_network.self_link
+  peer_network = google_compute_network.office_external_network.self_link
 }
 
-resource "google_compute_firewall" "ssh_fw" {
-  name     = "ssh-fw"
-  network  = google_compute_network.smart_office_2.self_link
-  project  = var.project_id
-  priority = 900
+resource "google_compute_network_peering" "peer_internal_office_to_server" {
+  name         = "peer-internal-office-to-server"
+  network      = google_compute_network.office_internal_network.self_link
+  peer_network = google_compute_network.internal_server_network.self_link
+}
+
+resource "google_compute_network_peering" "peer_internal_server_to_office" {
+  name         = "peer-internal-server-to-office"
+  network      = google_compute_network.internal_server_network.self_link
+  peer_network = google_compute_network.office_internal_network.self_link
+}
+
+resource "google_compute_firewall" "allow_ssh_internal" {
+  name      = "allow-ssh-internal"
+  network   = google_compute_network.office_internal_network.self_link
+  project   = var.project_id
+  priority  = 65534
+  direction = "INGRESS"
 
   allow {
     protocol = "tcp"
@@ -41,28 +44,47 @@ resource "google_compute_firewall" "ssh_fw" {
   target_tags   = ["ssh"]
 }
 
-resource "google_compute_firewall" "icmp_fw" {
-  name     = "icmp-fw"
-  network  = google_compute_network.smart_office_2.self_link
-  project  = var.project_id
-  priority = 900
+resource "google_compute_firewall" "allow_ssh_external" {
+  name      = "allow-ssh-external"
+  network   = google_compute_network.office_external_network.self_link
+  project   = var.project_id
+  priority  = 65534
+  direction = "INGRESS"
 
   allow {
-    protocol = "icmp"
+    protocol = "tcp"
+    ports    = ["22"]
   }
 
   source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["ssh"]
 }
 
-resource "google_compute_firewall" "internal_fw" {
-  name     = "internal-fw"
-  network  = google_compute_network.smart_office_2.self_link
-  project  = var.project_id
-  priority = 900
+resource "google_compute_firewall" "allow_ssh_server" {
+  name      = "allow-ssh-server"
+  network   = google_compute_network.internal_server_network.self_link
+  project   = var.project_id
+  priority  = 65534
+  direction = "INGRESS"
 
   allow {
-    protocol = "udp"
-    ports    = ["0-65535"]
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["ssh"]
+}
+
+resource "google_compute_firewall" "allow_external" {
+  name      = "allow-external"
+  network   = google_compute_network.office_external_network.self_link
+  project   = var.project_id
+  priority  = 65534
+  direction = "INGRESS"
+
+  allow {
+    protocol = "icmp"
   }
 
   allow {
@@ -70,258 +92,184 @@ resource "google_compute_firewall" "internal_fw" {
     ports    = ["0-65535"]
   }
 
-  source_tags = ["internal"]
-  target_tags = ["internal"]
+  allow {
+    protocol = "udp"
+    ports    = ["0-65535"]
+  }
+
+  source_ranges = [google_compute_subnetwork.office_external_lan.ip_cidr_range]
 }
 
-resource "google_compute_router" "router" {
-  name    = "router"
-  network = google_compute_network.smart_office_2.self_link
-  project = var.project_id
+resource "google_compute_firewall" "allow_internal" {
+  name      = "allow-internal"
+  network   = google_compute_network.office_internal_network.self_link
+  project   = var.project_id
+  priority  = 65534
+  direction = "INGRESS"
 
-  bgp {
-    asn               = 64514
-    advertise_mode    = "CUSTOM"
-    advertised_groups = ["ALL_SUBNETS"]
+  allow {
+    protocol = "icmp"
   }
+
+  allow {
+    protocol = "tcp"
+    ports    = ["0-65535"]
+  }
+
+  allow {
+    protocol = "udp"
+    ports    = ["0-65535"]
+  }
+
+  source_ranges = [google_compute_subnetwork.office_internal_lan.ip_cidr_range]
 }
 
-resource "google_compute_router_nat" "nat" {
-  name                               = "nat"
-  router                             = google_compute_router.router.name
-  nat_ip_allocate_option             = "AUTO_ONLY"
-  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+resource "google_compute_firewall" "allow_external_from_internal" {
+  name      = "allow-external-from-internal"
+  network   = google_compute_network.office_external_network.self_link
+  project   = var.project_id
+  priority  = 1000
+  direction = "INGRESS"
 
-  log_config {
-    enable = true
-    filter = "ERRORS_ONLY"
+  allow {
+    protocol = "tcp"
+    ports    = ["0-65535"]
   }
+
+  allow {
+    protocol = "udp"
+    ports    = ["0-65535"]
+  }
+
+  allow {
+    protocol = "icmp"
+  }
+
+  source_ranges = [google_compute_subnetwork.office_internal_lan.ip_cidr_range]
+  target_tags   = ["employee"]
 }
 
-resource "google_compute_subnetwork" "office_internal_lan" {
-  name          = "office-internal-lan"
-  ip_cidr_range = var.private_subnet_cidr_blocks[1]
-  region        = var.region
-  network       = google_compute_network.smart_office_2.self_link
+resource "google_compute_firewall" "allow_internal_from_external" {
+  name      = "allow-internal-from-external"
+  network   = google_compute_network.office_internal_network.self_link
+  project   = var.project_id
+  priority  = 1000
+  direction = "INGRESS"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["0-65535"]
+  }
+
+  allow {
+    protocol = "udp"
+    ports    = ["0-65535"]
+  }
+
+  allow {
+    protocol = "icmp"
+  }
+
+  source_ranges = [google_compute_instance.employee_remote_pc.network_interface[0].network_ip]
+  target_tags   = ["employee", "speaker-hub"]
 }
 
-resource "google_compute_subnetwork" "dmz" {
-  name          = "dmz"
-  ip_cidr_range = var.private_subnet_cidr_blocks[2]
-  region        = var.region
-  network       = google_compute_network.smart_office_2.self_link
+resource "google_compute_firewall" "allow_hub_from_speakers" {
+  name      = "allow-hub-from-speakers"
+  network   = google_compute_network.office_internal_network.self_link
+  project   = var.project_id
+  priority  = 1000
+  direction = "INGRESS"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["0-65535"]
+  }
+
+  allow {
+    protocol = "udp"
+    ports    = ["0-65535"]
+  }
+
+  allow {
+    protocol = "icmp"
+  }
+
+  source_tags = ["speaker"]
+  target_tags = ["speaker-hub"]
 }
 
-resource "google_compute_subnetwork" "office_external_lan" {
-  name          = "office-external-lan"
-  ip_cidr_range = var.private_subnet_cidr_blocks[3]
-  region        = var.region
-  network       = google_compute_network.smart_office_2.self_link
+resource "google_compute_firewall" "allow_speakers_from_hub" {
+  name      = "allow-speakers-from-hub"
+  network   = google_compute_network.office_internal_network.self_link
+  project   = var.project_id
+  priority  = 1000
+  direction = "INGRESS"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["0-65535"]
+  }
+
+  allow {
+    protocol = "udp"
+    ports    = ["0-65535"]
+  }
+
+  allow {
+    protocol = "icmp"
+  }
+
+  source_tags = ["speaker-hub"]
+  target_tags = ["speaker"]
 }
 
-resource "google_compute_subnetwork" "server_lan" {
-  name          = "server-lan"
-  ip_cidr_range = var.private_subnet_cidr_blocks[4]
-  region        = var.region
-  network       = google_compute_network.smart_office_2.self_link
+resource "google_compute_firewall" "allow_hub_from_server" {
+  name      = "allow-hub-from-server"
+  network   = google_compute_network.office_internal_network.self_link
+  project   = var.project_id
+  priority  = 1000
+  direction = "INGRESS"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["0-65535"]
+  }
+
+  allow {
+    protocol = "udp"
+    ports    = ["0-65535"]
+  }
+
+  allow {
+    protocol = "icmp"
+  }
+
+  source_tags = [google_compute_subnetwork.speaker_server_lan.ip_cidr_range]
+  target_tags = ["speaker-hub"]
 }
 
-resource "google_compute_subnetwork" "smart_speaker_lan" {
-  name          = "smart-speaker-lan"
-  ip_cidr_range = var.private_subnet_cidr_blocks[5]
-  region        = var.region
-  network       = google_compute_network.smart_office_2.self_link
-}
+resource "google_compute_firewall" "allow_server_from_hub" {
+  name      = "allow-server-from-hub"
+  network   = google_compute_network.internal_server_network.self_link
+  project   = var.project_id
+  priority  = 1000
+  direction = "INGRESS"
 
-resource "google_compute_instance" "employee_pc_1" {
-  name         = "employee-pc-1"
-  machine_type = var.machine_type
-  project      = var.project_id
-  zone         = var.zone
-  tags         = ["ssh"]
-
-  boot_disk {
-    initialize_params {
-      image = var.windows_image
-    }
+  allow {
+    protocol = "tcp"
+    ports    = ["0-65535"]
   }
 
-  network_interface {
-    subnetwork = google_compute_subnetwork.office_internal_lan.self_link
-  }
-}
-
-resource "google_compute_instance" "employee_pc_2" {
-  name         = "employee-pc-2"
-  machine_type = var.machine_type
-  project      = var.project_id
-  zone         = var.zone
-  tags         = ["ssh"]
-
-  boot_disk {
-    initialize_params {
-      image = var.windows_image
-    }
+  allow {
+    protocol = "udp"
+    ports    = ["0-65535"]
   }
 
-  network_interface {
-    subnetwork = google_compute_subnetwork.office_internal_lan.self_link
-  }
-}
-
-resource "google_compute_instance" "router_firewall_vpn" {
-  name         = "router-firewall-vpn"
-  machine_type = var.machine_type
-  project      = var.project_id
-  zone         = var.zone
-  tags         = ["ssh"]
-
-  boot_disk {
-    initialize_params {
-      image = var.container_image
-    }
+  allow {
+    protocol = "icmp"
   }
 
-  network_interface {
-    subnetwork = google_compute_subnetwork.dmz.self_link
-  }
-
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
-}
-
-resource "google_compute_instance" "smart_speaker_hub" {
-  name         = "smart-speaker-hub"
-  machine_type = var.machine_type
-  project      = var.project_id
-  zone         = var.zone
-  tags         = ["ssh"]
-
-  boot_disk {
-    initialize_params {
-      image = var.container_image
-    }
-  }
-
-  network_interface {
-    subnetwork = google_compute_subnetwork.dmz.self_link
-  }
-
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
-}
-
-resource "google_compute_instance" "smart_speaker_cloud_server" {
-  name         = "smart-speaker-cloud-server"
-  machine_type = var.machine_type
-  project      = var.project_id
-  zone         = var.zone
-  tags         = ["ssh", "webserver"]
-
-  boot_disk {
-    initialize_params {
-      image = var.container_image
-    }
-  }
-
-  network_interface {
-    subnetwork = google_compute_subnetwork.server_lan.self_link
-    access_config {}
-  }
-
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
-}
-
-resource "google_compute_instance" "employee_remote_pc" {
-  name         = "employee-remote-pc"
-  machine_type = var.machine_type
-  project      = var.project_id
-  zone         = var.zone
-  tags         = ["ssh"]
-
-  boot_disk {
-    initialize_params {
-      image = var.windows_image
-    }
-  }
-
-  network_interface {
-    subnetwork = google_compute_subnetwork.office_external_lan.self_link
-  }
-}
-
-resource "google_compute_instance" "attacker" {
-  name         = "attacker"
-  machine_type = var.machine_type
-  project      = var.project_id
-  zone         = var.zone
-  tags         = ["ssh"]
-
-  boot_disk {
-    initialize_params {
-      image = var.debian_image
-    }
-  }
-
-  network_interface {
-    subnetwork = google_compute_subnetwork.office_external_lan.self_link
-  }
-}
-
-resource "google_compute_instance" "smart_speaker_1" {
-  name         = "smart-speaker-1"
-  machine_type = var.machine_type
-  project      = var.project_id
-  zone         = var.zone
-  tags         = ["ssh"]
-
-  boot_disk {
-    initialize_params {
-      image = var.container_image
-    }
-  }
-
-  network_interface {
-    subnetwork = google_compute_subnetwork.smart_speaker_lan.self_link
-  }
-
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
-}
-
-resource "google_compute_instance" "smart_speaker_2" {
-  name         = "smart-speaker-2"
-  machine_type = var.machine_type
-  project      = var.project_id
-  zone         = var.zone
-  tags         = ["ssh"]
-
-  boot_disk {
-    initialize_params {
-      image = var.container_image
-    }
-  }
-
-  network_interface {
-    subnetwork = google_compute_subnetwork.smart_speaker_lan.self_link
-  }
-
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
-}
-
-resource "google_compute_instance" "smart_speaker_3" {
-  name         = "smart-speaker-3"
-  machine_type = var.machine_type
-  project      = var.project_id
-  zone         = var.zone
-  tags         = ["ssh"]
-
-  boot_disk {
-    initialize_params {
-      image = var.container_image
-    }
-  }
-
-  network_interface {
-    subnetwork = google_compute_subnetwork.smart_speaker_lan.self_link
-  }
-
-  metadata_startup_script = templatefile(var.docker_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
+  source_tags = [google_compute_instance.smart_speaker_hub.network_interface[0].network_ip]
+  target_tags = ["server"]
 }

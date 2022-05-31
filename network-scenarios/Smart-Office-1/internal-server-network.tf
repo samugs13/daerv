@@ -28,6 +28,4 @@ resource "google_compute_instance" "cloud_printer_server" {
   network_interface {
     subnetwork = google_compute_subnetwork.printer_server_lan.self_link
   }
-
-  metadata_startup_script = templatefile(var.manual_provisioning_path, { args = "-p 80:80", image = "nginx", tag = "latest" })
 }

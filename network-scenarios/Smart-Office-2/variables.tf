@@ -41,11 +41,7 @@ variable "container_image" {
   default = "cos-cloud/cos-stable"
 }
 
-variable "windows_container_image" {
-  default = "windows-cloud/windows-2019-for-containers"
-}
-
-variable "windows_image" {
+variable "windows_server_image" {
   default = "windows-cloud/windows-2022-core"
 }
 
@@ -62,9 +58,5 @@ variable "centos_image" {
 }
 
 variable "docker_provisioning_path" {
-  type = string
-}
-
-variable "manual_provisioning_path" {
   type = string
 }

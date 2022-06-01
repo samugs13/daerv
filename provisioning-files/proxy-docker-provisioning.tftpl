@@ -3,6 +3,9 @@
 # This script is used to provision a Linux instance using the instance configured as network proxy  
 # It receives the IP address of the proxy instance as a parameter
 
+# Give time for the proxy instance to be fully configured
+sleep 30
+
 # Which OS are we running on?
 OS=$(cat /etc/os-release | grep "^ID=" | cut -d "=" -f 2 | xargs)
 PROXY_IP="http://${proxy}:3128"

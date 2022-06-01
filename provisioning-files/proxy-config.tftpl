@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# This script sets up a Debian instance as a Squid network proxy
+# It receives as parameter the sources from which squid proxy should accept connections
+
+sudo apt-get install squid -y
+sudo sed -i 's:#\(http_access deny to_localhost\):\1:' /etc/squid/squid.conf
+sudo sed -i "1188i acl internal src ${sources}" /etc/squid/squid.conf
+sudo sed -i "1402i http_access allow internal" /etc/squid/squid.conf
+sudo tee -a /etc/squid/squid.conf <<'EOF'
+acl to_metadata dst 169.254.169.254
+http_access deny to_metadata
+EOF
+sudo service squid restart

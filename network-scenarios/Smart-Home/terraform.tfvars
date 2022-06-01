@@ -2,6 +2,6 @@
 
 project_id = "tfg-daerv"
 
-docker_provisioning_path = "../../template-files/docker-provisioning.tftpl"
+proxy_config_path = "../../provisioning-files/proxy-config.tftpl"
 
-manual_provisioning_path = "../../template-files/manual-provisioning.tftpl"
+proxy_provisioning_path = "../../provisioning-files/proxy-docker-provisioning.tftpl"

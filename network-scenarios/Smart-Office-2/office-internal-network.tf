@@ -5,8 +5,8 @@ resource "google_compute_network" "office_internal_network" {
   auto_create_subnetworks = false
 }
 
-resource "google_compute_router" "office_internal_router" {
-  name    = "office-internal-router"
+resource "google_compute_router" "internal_router" {
+  name    = "internal-router"
   network = google_compute_network.office_internal_network.self_link
   project = var.project_id
 
@@ -17,9 +17,9 @@ resource "google_compute_router" "office_internal_router" {
   }
 }
 
-resource "google_compute_router_nat" "office_internal_nat" {
-  name                               = "office-internal-nat"
-  router                             = google_compute_router.office_internal_router.name
+resource "google_compute_router_nat" "internal_nat" {
+  name                               = "internal-nat"
+  router                             = google_compute_router.internal_router.name
   nat_ip_allocate_option             = "AUTO_ONLY"
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 
@@ -52,7 +52,7 @@ resource "google_compute_instance" "employee_pc_1" {
 
   boot_disk {
     initialize_params {
-      image = var.windows_image
+      image = var.ubuntu_image
     }
   }
 
@@ -70,7 +70,7 @@ resource "google_compute_instance" "employee_pc_2" {
 
   boot_disk {
     initialize_params {
-      image = var.windows_image
+      image = var.ubuntu_image
     }
   }
 
@@ -88,7 +88,7 @@ resource "google_compute_instance" "smart_speaker_hub" {
 
   boot_disk {
     initialize_params {
-      image = var.ubuntu_image
+      image = var.debian_image
     }
   }
 

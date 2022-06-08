@@ -21,7 +21,7 @@ resource "google_compute_instance" "smart_speaker_cloud_server" {
 
   boot_disk {
     initialize_params {
-      image = var.ubuntu_image
+      image = var.debian_image
     }
   }
 

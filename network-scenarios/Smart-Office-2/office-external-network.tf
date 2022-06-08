@@ -5,8 +5,8 @@ resource "google_compute_network" "office_external_network" {
   auto_create_subnetworks = false
 }
 
-resource "google_compute_router" "office_external_router" {
-  name    = "office-external-router"
+resource "google_compute_router" "external_router" {
+  name    = "external-router"
   network = google_compute_network.office_external_network.self_link
   project = var.project_id
 
@@ -17,9 +17,9 @@ resource "google_compute_router" "office_external_router" {
   }
 }
 
-resource "google_compute_router_nat" "office_external_nat" {
-  name                               = "office-external-nat"
-  router                             = google_compute_router.office_external_router.name
+resource "google_compute_router_nat" "external_nat" {
+  name                               = "external-nat"
+  router                             = google_compute_router.external_router.name
   nat_ip_allocate_option             = "AUTO_ONLY"
   source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 

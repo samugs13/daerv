@@ -21,7 +21,7 @@ resource "google_compute_instance" "cloud_printer_server" {
 
   boot_disk {
     initialize_params {
-      image = var.debian_image
+      image = var.ubuntu_image
     }
   }
 

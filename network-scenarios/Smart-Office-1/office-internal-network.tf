@@ -106,7 +106,7 @@ resource "google_compute_instance" "office_printer" {
 
   boot_disk {
     initialize_params {
-      image = var.ubuntu_image
+      image = var.debian_image
     }
   }
 

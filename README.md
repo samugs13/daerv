@@ -59,5 +59,17 @@ export GOOGLE_APPLICATION_CREDENTIALS={{path}}
 
 ## Escenarios de red :computer:
 
+### Escenario Smart-Office 1
+![Escenario Smart Office 1](https://user-images.githubusercontent.com/78796980/172908833-6600649a-fcad-4ed9-bf78-c5e4a64b36e4.png)
+
+### Escenario Smart-Office 2
+![Escenario Smart Office 2](https://user-images.githubusercontent.com/78796980/172908860-6e477ae1-aa95-4917-bbca-178331e36ee7.png)
+
+### Escenario Smart-Home
+![Escenario Smart Home](https://user-images.githubusercontent.com/78796980/172908776-fe264ea1-3bae-4801-b391-03bca0f33cc2.png)
+
+### Escenario SCADA
+![Escenario SCADA](https://user-images.githubusercontent.com/78796980/172908968-05fe6541-bc17-4f7f-be61-a6a0c931d727.png)
+
 ## Autor :art:
 [Samuel García Sánchez](https://github.com/samugs13)

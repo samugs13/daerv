@@ -37,14 +37,6 @@ variable "machine_type" {
   default     = "e2-medium"
 }
 
-variable "container_image" {
-  default = "cos-cloud/cos-stable"
-}
-
-variable "windows_server_image" {
-  default = "windows-cloud/windows-2022-core"
-}
-
 variable "ubuntu_image" {
   default = "ubuntu-os-cloud/ubuntu-1804-lts"
 }

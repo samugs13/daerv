@@ -92,27 +92,3 @@ resource "google_compute_firewall" "allow_home_from_attacker" {
 
   source_ranges = [google_compute_subnetwork.attacker_lan.ip_cidr_range]
 }
-
-# resource "google_compute_firewall" "allow_attacker_from_home" {
-#   name      = "allow-attacker-from-home"
-#   network   = google_compute_network.smart_home.self_link
-#   project   = var.project_id
-#   priority  = 1000
-#   direction = "INGRESS"
-#
-#   allow {
-#     protocol = "tcp"
-#     ports    = ["0-65535"]
-#   }
-#
-#   allow {
-#     protocol = "udp"
-#     ports    = ["0-65535"]
-#   }
-#
-#   allow {
-#     protocol = "icmp"
-#   }
-#
-#   source_ranges = [google_compute_subnetwork.home_lan.ip_cidr_range]
-# }

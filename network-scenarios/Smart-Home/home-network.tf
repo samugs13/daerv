@@ -50,8 +50,6 @@ resource "google_compute_instance" "smartphone" {
   network_interface {
     subnetwork = google_compute_subnetwork.home_lan.self_link
   }
-
-  metadata_startup_script = templatefile(var.proxy_provisioning_path, { proxy = google_compute_instance.wireless_ap.network_interface[0].network_ip, args = "--privileged -d -p 6080:6080 -p 5554:5554 -p 5555:5555 -e DEVICE=\"Samsung Galaxy S6\" --name android-container", image = "budtmo/docker-android-x86-8.1", tag = "latest" })
 }
 
 resource "google_compute_instance" "tablet" {
@@ -70,8 +68,6 @@ resource "google_compute_instance" "tablet" {
   network_interface {
     subnetwork = google_compute_subnetwork.home_lan.self_link
   }
-
-  metadata_startup_script = templatefile(var.proxy_provisioning_path, { proxy = google_compute_instance.wireless_ap.network_interface[0].network_ip, args = "--privileged -d -p 6080:6080 -p 5554:5554 -p 5555:5555 -e DEVICE=\"Nexus 5\" --name android-container", image = "budtmo/docker-android-x86-8.1", tag = "latest" })
 }
 
 resource "google_compute_instance" "ccu2" {
@@ -90,6 +86,8 @@ resource "google_compute_instance" "ccu2" {
   network_interface {
     subnetwork = google_compute_subnetwork.home_lan.self_link
   }
+
+  metadata_startup_script = templatefile(var.proxy_provisioning_path, { proxy = google_compute_instance.wireless_ap.network_interface[0].network_ip, args = "", image = "diyhue/core", tag = "latest" })
 }
 
 resource "google_compute_instance" "smart_bulb" {

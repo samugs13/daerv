@@ -5,6 +5,30 @@ resource "google_compute_network" "scada_network" {
   auto_create_subnetworks = false
 }
 
+resource "google_compute_router" "scada_router" {
+  name    = "scada-router"
+  network = google_compute_network.scada_network.self_link
+  project = var.project_id
+
+  bgp {
+    asn               = 64512
+    advertise_mode    = "CUSTOM"
+    advertised_groups = ["ALL_SUBNETS"]
+  }
+}
+
+resource "google_compute_router_nat" "scada_nat" {
+  name                               = "scada-nat"
+  router                             = google_compute_router.scada_router.name
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+
+  log_config {
+    enable = true
+    filter = "ERRORS_ONLY"
+  }
+}
+
 resource "google_compute_subnetwork" "internet_dmz" {
   name          = "internet-dmz"
   ip_cidr_range = var.private_subnet_cidr_blocks[0]
